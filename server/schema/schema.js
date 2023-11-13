@@ -25,6 +25,8 @@ const  ClientType = new GraphQLObjectType({
     })
 })
 
+// Project Type
+
 const  ProjectType = new GraphQLObjectType({
     name: "Project",
     fields: () => ({
@@ -77,6 +79,61 @@ const RootQuery = new GraphQLObjectType({
     }
 })
 
+// Mutations
+const mutation = new GraphQLObjectType({
+    name: "Mutation",
+    fields: {
+        // Add a client
+        addClient: {
+            type: ClientType,
+            args: {
+                name: {type: GraphQLNonNull(GraphQLString)},
+                email: {type: GraphQLNonNull(GraphQLString)},
+                phone: {type: GraphQLNonNull(GraphQLString)}
+            },
+            resolve: (parent,args) => {
+                const clientObj = new Client({
+                    name: args.name,
+                    email: args.email,
+                    phone: args.phone
+                })
+
+                return clientObj.save();
+            }
+        },
+        // Delete Client
+        deleteClient: {
+            type: ClientType,
+            args: {
+                id: {type: GraphQLNonNull(GraphQLID)}
+            },
+            resolve: (parent,args) => {
+                Project.find({clientId: args.id})
+                    .then(projects => {
+                        projects.forEach((project) => {
+                            project.deleteOne();
+                        })
+                    })
+
+                return Client.findByIdAndDelete(args.id);
+            }
+        },
+        // Add project
+        addProject: {
+
+        },
+        // Delte project
+        deleteProject: {
+
+        },
+        // Update Project
+        updateProject: {
+            
+        }
+    }
+})
+
 module.exports = new GraphQLSchema({
   query: RootQuery,
+  mutation
 });
