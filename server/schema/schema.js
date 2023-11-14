@@ -110,8 +110,15 @@ const mutation = new GraphQLObjectType({
             resolve: (parent,args) => {
                 Project.find({clientId: args.id})
                     .then(projects => {
-                        projects.forEach((project) => {
-                            project.deleteOne();
+
+                        projects.forEach((pVal) => {
+                            pVal.deleteOne()
+                            .then(() => {
+                                console.log("Success");
+                            })
+                            .catch((err) => {
+                                console.log("FAiled");
+                            })
                         })
                     })
 
